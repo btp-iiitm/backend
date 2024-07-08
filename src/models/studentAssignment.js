@@ -21,6 +21,8 @@ const studentAssignmentSchema = new mongoose.Schema({
   },
 });
 
+studentAssignmentSchema.index({ studentId: 1, subjectId: 1 }, { unique: true });
+
 const StudentAssignment = mongoose.model(
   "StudentAssignment",
   studentAssignmentSchema,

@@ -10,6 +10,10 @@ const subjectRouter = require("./src/routes/subject");
 const examRouter = require("./src/routes/exam");
 const quizRouter = require("./src/routes/quiz");
 const assignmentRouter = require("./src/routes/assignment");
+const studentSubjectRouter = require("./src/routes/studentSubject");
+const studentQuizRouter = require("./src/routes/studentQuiz");
+const studentAssignmentRouter = require("./src/routes/studentAssignment");
+const studentExamRouter = require("./src/routes/studentExam");
 
 const AppError = require("./src/utils/appError");
 const globalError = require("./src/controllers/globalError");
@@ -31,6 +35,10 @@ app.use("/api/subject", subjectRouter);
 app.use("/api/exam", examRouter);
 app.use("/api/quiz", quizRouter);
 app.use("/api/assignment", assignmentRouter);
+app.use("/api/studentSubject", studentSubjectRouter);
+app.use("/api/studentAssignment", studentAssignmentRouter);
+app.use("/api/studentQuiz", studentQuizRouter);
+app.use("/api/studentExam", studentExamRouter);
 
 app.all("*", (req, res, next) => {
   const error = new AppError(
