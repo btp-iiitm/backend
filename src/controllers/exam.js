@@ -12,5 +12,24 @@ const createExam = async (req, res, next) => {
     next(error);
   }
 };
+const getAllCourseExam = async (req, res, next) => {
+  try {
+    const { courseId } = req.query;
 
-module.exports = { createExam };
+    if (!courseId) return next(new AppError("Course ID is required", 400));
+
+    const exams = await Exam.find({ courseId })
+      .populate({ path: "subjectId", select: "-__v -courseId -createdAt -_id" })
+      .select("-__v -courseId -createdAt -_id");
+
+    res.status(200).json({
+      status: "success",
+      results: exams.length,
+      exams,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createExam, getAllCourseExam };

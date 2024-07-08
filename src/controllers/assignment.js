@@ -13,4 +13,24 @@ const createAssignment = async (req, res, next) => {
   }
 };
 
-module.exports = { createAssignment };
+const getAllCourseAssignments = async (req, res, next) => {
+  try {
+    const { courseId } = req.query;
+
+    if (!courseId) return next(new AppError("Course ID is required", 400));
+
+    const assignments = await Assignment.find({ courseId })
+      .populate({ path: "subjectId", select: "-__v -courseId -createdAt -_id" })
+      .select("-__v -courseId -createdAt -_id");
+
+    res.status(200).json({
+      status: "success",
+      results: assignments.length,
+      assignments,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createAssignment, getAllCourseAssignments };

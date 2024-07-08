@@ -1,7 +1,6 @@
 const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
-const Student = require("../models/student");
 const AppError = require("../utils/appError");
 
 const signup = async (req, res, next) => {
@@ -31,32 +30,16 @@ const login = async (req, res, next) => {
     if (!user || !(await user.checkPassword(password, user.password)))
       return next(new AppError("Incorrect email or password", 401));
 
-    let response = {};
-
-    const userKeys = ["name", "email", "role"];
-    userKeys.forEach((key) => {
-      response[key] = user[key];
-    });
-
-    if (user.role === "user") {
-      const student = await Student.findOne({ userId: user._id }).populate({
-        path: "course",
-      });
-
-      const excludedKeys = ["_id", "userId", "__v"];
-
-      Object.keys(student._doc).forEach((key) => {
-        if (!excludedKeys.includes(key)) response[key] = student[key];
-      });
-    }
-
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
 
     res.status(200).json({
       status: "success",
-      user: response,
+      user: {
+        email: user.email,
+        role: user.role,
+      },
       token,
     });
   } catch (error) {
