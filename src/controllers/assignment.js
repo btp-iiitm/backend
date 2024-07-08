@@ -1,3 +1,4 @@
+const Student = require("../models/student");
 const Assignment = require("../models/assignment");
 
 const createAssignment = async (req, res, next) => {
@@ -15,13 +16,12 @@ const createAssignment = async (req, res, next) => {
 
 const getAllCourseAssignments = async (req, res, next) => {
   try {
-    const { courseId } = req.query;
-
-    if (!courseId) return next(new AppError("Course ID is required", 400));
+    const student = await Student.findOne({ userId: req.user._id });
+    const courseId = student.course;
 
     const assignments = await Assignment.find({ courseId })
       .populate({ path: "subjectId", select: "-__v -courseId -createdAt -_id" })
-      .select("-__v -courseId -createdAt -_id");
+      .select("-__v -courseId -createdAt");
 
     res.status(200).json({
       status: "success",

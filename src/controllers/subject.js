@@ -1,3 +1,4 @@
+const Student = require("../models/student");
 const Subject = require("../models/subject");
 
 const createSubject = async (req, res, next) => {
@@ -15,12 +16,12 @@ const createSubject = async (req, res, next) => {
 
 const getAllCourseSubjects = async (req, res, next) => {
   try {
-    const { courseId } = req.query;
+    const student = await Student.findOne({ userId: req.user._id });
+    const courseId = student.course;
 
-    if (!courseId) return next(new AppError("Course ID is required", 400));
-
-    const subjects = await Subject.find({ courseId })
-    .select("-__v -courseId -createdAt -_id");
+    const subjects = await Subject.find({ courseId }).select(
+      "-__v -courseId -createdAt",
+    );
 
     res.status(200).json({
       status: "success",

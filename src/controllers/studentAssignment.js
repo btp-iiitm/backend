@@ -29,4 +29,23 @@ const linkStudentAssignment = async (req, res, next) => {
   }
 };
 
-module.exports = { linkStudentAssignment };
+const getStudentAssignments = async (req, res, next) => {
+  try {
+    const student = await Student.findOne({ userId: req.user._id });
+    const studentId = student._id;
+
+    const studentAssignments = await StudentAssignment.find({
+      studentId,
+    }).select("-__v -studentId -createdAt -_id");
+
+    res.status(200).json({
+      status: "success",
+      results: studentAssignments.length,
+      studentAssignments,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { linkStudentAssignment, getStudentAssignments };

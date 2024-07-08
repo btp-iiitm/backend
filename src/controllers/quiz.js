@@ -1,4 +1,5 @@
 const Quiz = require("../models/quiz");
+const Student = require("../models/student");
 const AppError = require("../utils/appError");
 
 const createQuiz = async (req, res, next) => {
@@ -16,13 +17,12 @@ const createQuiz = async (req, res, next) => {
 
 const getAllCourseQuizzes = async (req, res, next) => {
   try {
-    const { courseId } = req.query;
-
-    if (!courseId) return next(new AppError("Course ID is required", 400));
+    const student = await Student.findOne({ userId: req.user._id });
+    const courseId = student.course;
 
     const quizzes = await Quiz.find({ courseId })
       .populate({ path: "subjectId", select: "-__v -courseId -createdAt -_id" })
-      .select("-__v -courseId -createdAt -_id");
+      .select("-__v -courseId -createdAt");
 
     res.status(200).json({
       status: "success",

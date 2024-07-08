@@ -23,37 +23,27 @@ const createStudent = async (req, res, next) => {
 
 const getStudent = async (req, res, next) => {
   try {
-    const { email } = req.query;
+    const student = await Student.findOne({ userId: req.user._id })
+      .select("-_id -createdAt -__v")
+      .populate([
+        {
+          path: "course",
+          select: "-createdAt -__v -_id",
+        },
+        {
+          path: "userId",
+          select: "-createdAt -__v -_id",
+        },
+      ]);
 
-    if (!email) return next(new AppError("Please provide email", 400));
-
-    const user = await User.findOne({ email });
-    if (!user) return next(new AppError("User not found with this email", 404));
-
-    const student = await Student.findOne({ userId: user._id }).populate({
-      path: "course",
-      select: "-createdAt -__v",
-    });
     if (!student)
       return next(
         new AppError("Student not found with this email, contack admin", 404),
       );
 
-    let response = {};
-    const excludedFieldsUser = ["_id", "__v", "createdAt"];
-    const excludedFieldsStudent = ["_id", "__v", "userId", "createdAt"];
-
-    Object.keys(user._doc).forEach((key) => {
-      if (!excludedFieldsUser.includes(key)) response[key] = user[key];
-    });
-
-    Object.keys(student._doc).forEach((key) => {
-      if (!excludedFieldsStudent.includes(key)) response[key] = student[key];
-    });
-
     res.status(200).json({
       status: "success",
-      student: response,
+      student,
     });
   } catch (error) {
     next(error);
