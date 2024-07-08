@@ -6,9 +6,7 @@ const createCourse = async (req, res, next) => {
 
     res.status(201).json({
       status: "success",
-      data: {
-        course,
-      },
+      course,
     });
   } catch (error) {
     next(error);

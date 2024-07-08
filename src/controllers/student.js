@@ -14,9 +14,7 @@ const createStudent = async (req, res, next) => {
 
     res.status(201).json({
       status: "success",
-      data: {
-        student,
-      },
+      student,
     });
   } catch (error) {
     next(error);

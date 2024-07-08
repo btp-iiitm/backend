@@ -33,7 +33,7 @@ const examSchema = new mongoose.Schema({
   },
   timeAllowed: {
     type: Number,
-    required: [true, "An exam must have time allowed"],
+    required: [true, "An exam must have time allowed in minutes"],
   },
   createdAt: {
     type: Date,

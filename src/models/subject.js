@@ -9,6 +9,7 @@ const subjectSchema = new mongoose.Schema({
   subjectCode: {
     type: String,
     required: [true, "A subject must have a code"],
+    unique: true,
   },
   name: {
     type: String,

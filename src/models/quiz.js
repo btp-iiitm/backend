@@ -11,6 +11,14 @@ const quizSchema = new mongoose.Schema({
     ref: "Subject",
     required: [true, "An exam must have a subject ID"],
   },
+  name: {
+    type: String,
+    required: [true, "A quiz must have a name"],
+  },
+  description: {
+    type: String,
+    required: [true, "A quiz must have a description"],
+  },
   date: {
     type: Date,
     required: [true, "A quiz must have a date"],
