@@ -21,8 +21,6 @@ const studentExamSchema = new mongoose.Schema({
   },
 });
 
-studentExamSchema.index({ studentId: 1, examId: 1 }, { unique: true });
-
 const StudentExam = mongoose.model("StudentExam", studentExamSchema);
 
 module.exports = StudentExam;

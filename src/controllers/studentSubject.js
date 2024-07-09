@@ -10,6 +10,14 @@ const linkStudentSubject = async (req, res, next) => {
     const student = await Student.findById(studentId);
     const subject = await Subject.findById(subjectId);
 
+    const studentSubjectExists = await StudentSubject.findOne({
+      studentId,
+      subjectId,
+    });
+
+    if (studentSubjectExists)
+      return next(new AppError("Student already evaluated", 400));
+
     if (!student || !subject)
       return next(new AppError("Student or Subject not found", 404));
 
