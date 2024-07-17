@@ -56,4 +56,32 @@ const getStudentAssignments = async (req, res, next) => {
   }
 };
 
-module.exports = { linkStudentAssignment, getStudentAssignments };
+const getStudentAssignmentsByInstituteID = async (req, res, next) => {
+  try {
+    const student = await Student.findOne({
+      instituteId: req.params.instituteId,
+    });
+
+    if (!student) return next(new AppError("Student not found", 404));
+
+    const studentId = student._id;
+
+    const studentAssignments = await StudentAssignment.find({
+      studentId,
+    }).select("-__v -studentId -createdAt -_id");
+
+    res.status(200).json({
+      status: "success",
+      results: studentAssignments.length,
+      studentAssignments,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  linkStudentAssignment,
+  getStudentAssignments,
+  getStudentAssignmentsByInstituteID,
+};
