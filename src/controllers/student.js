@@ -78,7 +78,9 @@ const getAllStudents = async (req, res, next) => {
 
 const getStudentByInstituteID = async (req, res, next) => {
   try {
-    const student = await Student.find({ instituteId: req.params.instituteId })
+    const student = await Student.findOne({
+      instituteId: req.params.instituteId,
+    })
       .select("-_id -createdAt -__v")
       .populate([
         {
