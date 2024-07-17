@@ -50,4 +50,62 @@ const getStudent = async (req, res, next) => {
   }
 };
 
-module.exports = { createStudent, getStudent };
+const getAllStudents = async (req, res, next) => {
+  try {
+    const students = await Student.find()
+      .select("-_id -createdAt -__v")
+      .populate([
+        {
+          path: "course",
+          select: "-createdAt -__v -_id",
+        },
+        {
+          path: "userId",
+          select: "-createdAt -__v -_id",
+        },
+      ]);
+
+    if (!students) return next(new AppError("No student found", 404));
+
+    res.status(200).json({
+      status: "success",
+      students,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getStudentByInstituteID = async (req, res, next) => {
+  try {
+    const student = await Student.find({ instituteId: req.params.instituteId })
+      .select("-_id -createdAt -__v")
+      .populate([
+        {
+          path: "course",
+          select: "-createdAt -__v -_id",
+        },
+        {
+          path: "userId",
+          select: "-createdAt -__v -_id",
+        },
+      ]);
+
+    if (!student)
+      return next(new AppError("Student not found with this institudeId", 404));
+
+    res.status(200).json({
+      status: "success",
+      student,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  createStudent,
+  getStudent,
+  getAllStudents,
+  getStudentByInstituteID,
+};
