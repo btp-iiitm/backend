@@ -8,7 +8,7 @@ const Quiz = require("../models/quiz");
 const Assignment = require("../models/assignment");
 const Exam = require("../models/exam");
 const AppError = require("../utils/appError");
-const { genAiClient } = require("../../restClient");
+const { genAiClient, modelAiClient } = require("../../restClient");
 
 const getStudentAttendencePercentage = async (studentId) => {
   try {
@@ -192,6 +192,52 @@ const getInsights = async (studentData) => {
   }
 };
 
+const getGrade = async (studentData) => {
+  try {
+    const totalAttendance = studentData.attendencePercentage;
+    const quizAverage = studentData.quizPercentage;
+    const assignmentAverage = studentData.assignmentPercentage;
+    const examAverage = studentData.examPercentage;
+
+    const { data } = await modelAiClient({
+      method: "post",
+      url: "/predict",
+      data: {
+        totalAttendance,
+        quizAverage,
+        assignmentAverage,
+        examAverage,
+      },
+    });
+
+    return data;
+  } catch (error) {
+    throw new AppError(error, 500);
+  }
+};
+
+const getGradePercentage = (grade) => {
+  switch (grade) {
+    case "A":
+      return 90;
+
+    case "B":
+      return 70;
+
+    case "C":
+      return 50;
+
+    case "D":
+      return 40;
+
+    case "E":
+      return 20;
+
+    case "F":
+      return 10;
+  }
+};
+
 const getAnalytics = async (req, res, next) => {
   try {
     const student = await Student.findOne({ userId: req.user._id });
@@ -213,7 +259,11 @@ const getAnalytics = async (req, res, next) => {
       examPercentage,
     };
 
+    const studentGrade = await getGrade(studentData);
     const insightData = await getInsights(studentData);
+
+    studentData.grade = studentGrade;
+    studentData.gradePercentage = getGradePercentage(studentGrade);
 
     res.status(200).json({
       status: "success",
