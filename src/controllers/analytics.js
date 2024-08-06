@@ -260,9 +260,11 @@ const getAnalytics = async (req, res, next) => {
     };
 
     const studentGrade = await getGrade(studentData);
-    const insightData = await getInsights(studentData);
 
     studentData.grade = studentGrade;
+
+    const insightData = await getInsights(studentData);
+
     studentData.gradePercentage = getGradePercentage(studentGrade);
 
     res.status(200).json({
