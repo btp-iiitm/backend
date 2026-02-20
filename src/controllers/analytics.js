@@ -267,20 +267,25 @@ const getAnalytics = async (req, res, next) => {
 
     const insightData = await getInsights(studentData);
 
-    console.log(insightData, "DEBUG");
+    function extractJson(text) {
+      const firstBrace = text.indexOf("{");
+      const lastBrace = text.lastIndexOf("}");
+    
+      if (firstBrace === -1 || lastBrace === -1) {
+        throw new Error("No JSON object found in AI response");
+      }
+    
+      const jsonString = text.slice(firstBrace, lastBrace + 1);
 
-    let cleanedResult = insightData.result;
-
-    // Remove ```json and ``` wrappers
-    cleanedResult = cleanedResult
-      .replace(/```json/g, "")
-      .replace(/```/g, "")
-      .trim();
+      console.log(jsonString, "DEBUG");
+      
+      return JSON.parse(jsonString);
+    }
     
     let parsedInsights;
     
     try {
-      parsedInsights = JSON.parse(cleanedResult);
+      parsedInsights = extractJson(insightData.result);
     } catch (err) {
       console.error("Invalid JSON from AI:", cleanedResult);
       parsedInsights = { error: "AI returned invalid JSON format" };
