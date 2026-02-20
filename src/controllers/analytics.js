@@ -263,16 +263,33 @@ const getAnalytics = async (req, res, next) => {
 
     studentData.grade = studentGrade;
 
+    studentData.gradePercentage = getGradePercentage(studentGrade);
+
     const insightData = await getInsights(studentData);
 
     console.log(insightData, "DEBUG");
 
-    studentData.gradePercentage = getGradePercentage(studentGrade);
+    let cleanedResult = insightData.result;
+
+    // Remove ```json and ``` wrappers
+    cleanedResult = cleanedResult
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
+    
+    let parsedInsights;
+    
+    try {
+      parsedInsights = JSON.parse(cleanedResult);
+    } catch (err) {
+      console.error("Invalid JSON from AI:", cleanedResult);
+      parsedInsights = { error: "AI returned invalid JSON format" };
+    }
 
     res.status(200).json({
       status: "success",
       precentageData: studentData,
-      insightData: JSON.parse(insightData.result),
+      insightData: parsedInsights,
     });
   } catch (error) {
     next(error);
