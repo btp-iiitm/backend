@@ -265,6 +265,8 @@ const getAnalytics = async (req, res, next) => {
 
     const insightData = await getInsights(studentData);
 
+    console.log(insightData, "DEBUG");
+
     studentData.gradePercentage = getGradePercentage(studentGrade);
 
     res.status(200).json({
