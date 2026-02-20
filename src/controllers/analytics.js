@@ -287,10 +287,11 @@ const getAnalytics = async (req, res, next) => {
     try {
       parsedInsights = extractJson(insightData.result);
     } catch (err) {
-      console.error("Invalid JSON from AI:", cleanedResult);
-      parsedInsights = { error: "AI returned invalid JSON format" };
+      console.error("AI parsing failed:", err);
+      
+      parsedInsights = { error: "Could not generate insights" };
     }
-
+    
     res.status(200).json({
       status: "success",
       precentageData: studentData,
